@@ -58,6 +58,9 @@ class GameObject {
     return *component;
   }
 
+  /*
+    Checks if this object has a component of the specified type
+  */
   template<typename T>
   bool hasComponent() {
     for(Component* comp : _components) {
