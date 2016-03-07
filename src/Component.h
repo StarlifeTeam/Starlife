@@ -9,7 +9,7 @@ class Component {
  public:
   /*
     Called just once when the component starts to function
-   */
+  */
   virtual void start() {}
 
   /*
