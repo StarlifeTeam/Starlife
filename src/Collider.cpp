@@ -29,4 +29,8 @@ void Collider::update() {
   sf::Vector2f objectScale = gameObject->transform.getScale();
   _bounds.width = _size.x * objectScale.x;
   _bounds.height = _size.y * objectScale.y;
+  
+  // DEBUG. Draw Colliders
+  hasCollision = false;
+  // END DEBUG
 }

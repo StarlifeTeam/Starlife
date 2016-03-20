@@ -19,8 +19,9 @@ class Game {
   /*
     Note: Temporarily creating objects here. But it will be better to have
     a separate class just for creating the objects.
+    Update: Now only adds a object to _gameObjects
   */
-  GameObject& createObject();
+  void addObject(GameObject *gameObject);
   
  private:
   /*
@@ -31,9 +32,16 @@ class Game {
   void processInput();
 
   /*
+    Detects collisions between the game objects that have colliders
+    When a collision is detected, the OnCollision method is called
+    on all the components of the game objects involved.
+   */
+  void handleCollisions();
+
+  /*
     Updates all the game objects in the game.
   */
-  void update(sf::Time time);
+  void update();
 
   /*
     Renders all the game objects in the game.

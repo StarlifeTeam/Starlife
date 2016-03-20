@@ -48,14 +48,14 @@ class GameObject {
     there is not a component of that type attached to this object.
   */
   template<typename T>
-  T& getComponent() {
+  T* getComponent() {
     T* component = nullptr;
     for(Component* comp : _components) {
       component = dynamic_cast<T*>(comp);  // Checks if the type matches
       if(component != nullptr) break;
     }
     
-    return *component;
+    return component;
   }
 
   /*
@@ -72,8 +72,14 @@ class GameObject {
     return false;
   }
   
-  void update(float deltaTime);
-
+  /*
+    Returns all the components attached to this game object
+  */
+  std::vector<Component*>& getComponents() {
+    return _components;
+  }
+  
+  void update();
   void render(sf::RenderTarget& target);
 
  public:

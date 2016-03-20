@@ -1,14 +1,13 @@
 #include "GameObject.h"
 
-void GameObject::update(float deltaTime) {
+void GameObject::update() {
   for(Component* component : _components) {
     component->update();
   }
 }
 
 void GameObject::render(sf::RenderTarget& target) {
-  if(hasComponent<Renderer>()) {
-    getComponent<Renderer>().render(target);
-  }
+  Renderer* renderer = getComponent<Renderer>();
+  if(renderer) renderer->render(target);
 }
 

@@ -1,5 +1,7 @@
 #include <iostream>
+#include "Time.h"
 #include "Game.h"
+#include "Collider.h"
 
 Game::Game(sf::Vector2i size, std::string title) {
   _size = size;
@@ -22,10 +24,8 @@ void Game::stop(){
   _running = false;
 }
 
-GameObject& Game::createObject() {
-  GameObject* gameObject = new GameObject();
+void Game::addObject(GameObject *gameObject) {
   _gameObjects.push_back(gameObject);
-  return *gameObject;
 }
   
 void Game::run() {
@@ -53,8 +53,11 @@ void Game::run() {
       std::cout << "FPS: " << _fps << std::endl;
     }
     
+    Time::updateTime(elapsedTime.asSeconds());
+    
     processInput();
-    update(elapsedTime);
+    update();
+    handleCollisions();
     render();
   }
   
@@ -72,9 +75,34 @@ void Game::processInput() {
   }
 }
 
-void Game::update(sf::Time time) {
+void Game::handleCollisions() {
+  // Checks every object against every other object
+  for(GameObject* object1 : _gameObjects) {
+    for(GameObject* object2 : _gameObjects) {
+      if(object1 == object2) continue; // If both objects are the same. Do nothing.
+
+      Collider* collider1 = object1->getComponent<Collider>();
+      Collider* collider2 = object2->getComponent<Collider>();
+
+      // Only performs collision checking if the two objects have a collider
+      if(collider1 == nullptr || collider2 == nullptr) continue;
+
+      // If there is a collision, notify it to all the components in both objects
+      if(collider1->getBounds().intersects(collider2->getBounds())) {
+        for(Component* component : object1->getComponents()) {
+          component->onCollision(collider2);
+        }
+        for(Component* component : object2->getComponents()) {
+          component->onCollision(collider1);
+        }
+      }
+    }
+  }
+}
+
+void Game::update() {
   for(GameObject* gameObject : _gameObjects) {
-    gameObject->update(time.asSeconds());
+    gameObject->update();
   }
 }
 
@@ -83,6 +111,27 @@ void Game::render() {
 
   for(GameObject* gameObject : _gameObjects) {
     gameObject->render(_window);
+    
+    
+    // DEBUG. Drawing the colliders.
+    // Note: This slows down the game a lot
+    bool DEBUG_drawColliders = true;
+    if(DEBUG_drawColliders) {
+      if(!gameObject->hasComponent<Collider>()) continue;
+
+      Collider* collider = gameObject->getComponent<Collider>();
+      sf::FloatRect bounds = collider->getBounds();
+
+      sf::RectangleShape rect;
+      rect.setPosition(bounds.left, bounds.top);
+      rect.setSize(sf::Vector2f(bounds.width, bounds.height));
+      rect.setOutlineColor(collider->hasCollision?sf::Color::Red:sf::Color::Green);
+      rect.setOutlineThickness(1);
+      rect.setFillColor(sf::Color::Transparent);
+      _window.draw(rect);
+    }
+    // END DEBUG
+
   }
 
   _window.display();

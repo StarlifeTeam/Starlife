@@ -28,6 +28,11 @@ class Collider : public Component {
   */
   void update();
   
+  // DEBUG. Draw Colliders
+  bool hasCollision;
+  void onCollision(Collider* collider) { hasCollision = true; }
+  // END DEBUG  
+  
  private:
   sf::FloatRect _bounds;  // Bounding Box of the collider
   sf::Vector2f _size;  // Size of the collider bounding box
